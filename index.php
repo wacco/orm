@@ -5,8 +5,8 @@ use Nette\Diagnostics\Debugger,
 	Nette\Utils\Strings;
 
 // Load Nette Framework
-require './libs/Nette/loader.php';
-require './libs/tools.php';
+require __DIR__ . '/libs/Nette/loader.php';
+require __DIR__ . '/libs/tools.php';
 
 Debugger::enable();
 
@@ -21,4 +21,18 @@ $configurator->createRobotLoader()
 $container = $configurator->createContainer();
 $container->createProxyGenerator();
 
+$manager = new ORM\Manager($container->database);
+$repository = new Repositories\ArticleRepository(
+	new ORM\Mappers\NetteDatabaseMapper($container->database, $manager, 'Entities\Article')
+);
 
+
+
+
+$articleService = new Services\Admin\Article($repository, new Entities\Article);
+$articleService->setTitle('Moja titulka ' . Strings::random(4));
+$articleService->setContent('Obrash stránky');
+$articleService->save();
+$articleService->publish();
+
+debug($articleService);

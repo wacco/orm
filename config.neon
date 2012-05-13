@@ -22,6 +22,8 @@ common:
 		category: @manager::getRepository(Entities\Category)
 		tag: @manager::getRepository(Entities\Tag)
 
+#		article: Services\Admin
+
 	factories:
 		proxyGenerator: ORM\ProxyGenerator(%entityDir%, %proxyDir%, %tempDir%)
 

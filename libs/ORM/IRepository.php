@@ -4,6 +4,8 @@ namespace ORM;
 
 interface IRepository {
 
+	public function __construct(Mappers\IMapper $mapper);
+
 	public function save(IEntity $entity);
 
 	public function delete(IEntity $entity);

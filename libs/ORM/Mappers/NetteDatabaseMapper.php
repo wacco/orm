@@ -89,7 +89,10 @@ class NetteDatabaseMapper implements IMapper {
 
 		if ($entity->getId()) {
 			if (sha1(serialize($data)) != sha1(serialize($old))) {
-				$item = $this->connection->table($this->entityReflection->getTableName())->get($entity->getId())->update($data);
+				if (!$row = $this->findInStack($entity->getId())) {
+					$this->connection->table($this->entityReflection->getTableName())->get($entity->getId());
+				}
+				$item = $row->update($data);
 			}
 		} else {
 			$item = $this->connection->table($this->entityReflection->getTableName())->insert($data);
