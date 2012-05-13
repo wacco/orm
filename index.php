@@ -21,6 +21,10 @@ $configurator->createRobotLoader()
 $container = $configurator->createContainer();
 $container->createProxyGenerator();
 
+//$generator = new ORM\SqlGenerator(__DIR__ . '/app/Entities');
+//$generator->generate(__DIR__ . '/temp/structure.sql');
+
+
 /*
 $manager = new ORM\Manager($container->database);
 $repository = new Repositories\ArticleRepository(
@@ -30,10 +34,17 @@ $repository = new Repositories\ArticleRepository(
 
 
 
+$articleService = new Services\Article($container->article, $container->article->find(536));
+//$articleService->setTitle('Moja titulka ' . Strings::random(4));
+//$articleService->setContent('Obrash stránky');
+//$articleService->save();
+//$articleService->publish();
+
+
 $articleService = new Services\Admin\Article($container->article, $container->article->find(536));
 //$articleService->setTitle('Moja titulka ' . Strings::random(4));
 $articleService->setContent('Obrash stránky');
-//$articleService->save();
+$articleService->save();
 //$articleService->publish();
 
 debug($articleService);

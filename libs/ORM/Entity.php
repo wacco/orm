@@ -12,7 +12,7 @@ abstract class Entity implements IEntity, \IteratorAggregate {
 
 	/**
 	 * @primaryKey
-	 * @column(type=integer)
+	 * @column(type=integer, unsigned=true, null=false)
 	 */
 	protected $id;
 

@@ -7,5 +7,4 @@ use Nette;
 class ManyToOne extends ManyToMany {
 
 	const NAME = 'manyToOne';
-
 }

@@ -11,9 +11,18 @@ use ORM;
 class Tag extends Entity {
 
 	/**
-	 * @column(type=string)
+	 * @column(type=varchar, null=false)
 	 */
 	protected $name;
+
+	/**
+	 * @manyToMany(target=Article)
+	 */
+	protected $articles;
+
+	public function __construct() {
+		$this->articles = new ORM\Relationships\ManyToMany($this);
+	}
 
 	public function setName($name) {
 		$this->name = $name;

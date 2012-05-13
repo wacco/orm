@@ -24,6 +24,7 @@ common:
 
 	factories:
 		proxyGenerator: ORM\ProxyGenerator(%entityDir%, %proxyDir%, %tempDir%)
+		sqlGenerator: ORM\SqlGenerator(%entityDir%)
 
 production < common:
 

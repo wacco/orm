@@ -21,7 +21,7 @@ function debug() {
 		$message .= "\n#  " . dumpVar($param);
 	}
 	$trace = debug_backtrace();
-	$trace = end($trace);
+	$trace = current($trace);
 	if (isset($trace['line'])) {
 		$message .= "\n#  file: $trace[file]:$trace[line]";
 	}

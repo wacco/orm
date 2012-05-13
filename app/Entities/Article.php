@@ -14,17 +14,17 @@ class Article extends Entity {
 	const STATUS_PUBLISHED = 'published';
 
 	/**
-	 * @column(type=string)
+	 * @column(type=varchar, null=false)
 	 */
 	protected $title;
 
 	/**
-	 * @column(type=text)
+	 * @column(type=text, null=false)
 	 */
 	protected $content;
 
 	/**
-	 * @column(type=string)
+	 * @column(type=varchar, length=20, null=false)
 	 */
 	protected $status = self::STATUS_DRAFT;
 

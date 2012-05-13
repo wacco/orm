@@ -7,6 +7,7 @@ use ORM, Services, Entities, Nette;
 /**
  * Admin sluzba clankov
  * @author Branislav Vaculčiak
+ * @access(read, write)
  */
 class Article extends Services\Article {
 
@@ -29,5 +30,13 @@ class Article extends Services\Article {
 		$this->entity->setStatus(Entities\Article::STATUS_PUBLISHED);
 		$this->entity->setPublished(new Nette\DateTime);
 		$this->repository->save($this->entity);
+	}
+
+	/**
+	 * Vymazanie clanku
+	 * @return Article
+	 */
+	public function delete() {
+		$this->repository->delete($this->entity);
 	}
 }

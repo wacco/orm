@@ -11,7 +11,7 @@ use ORM;
 class Category extends Entity {
 
 	/**
-	 * @column(type=string)
+	 * @column(type=varchar, null=false)
 	 */
 	protected $name;
 

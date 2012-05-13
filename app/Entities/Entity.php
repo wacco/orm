@@ -7,7 +7,7 @@ use ORM, Nette;
 abstract class Entity extends ORM\Entity {
 
 	/**
-	 * @column(type=datetime)
+	 * @column(type=datetime, null=false)
 	 */
 	protected $created;
 
