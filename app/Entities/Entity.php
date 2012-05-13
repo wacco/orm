@@ -4,13 +4,7 @@ namespace Entities;
 
 use ORM, Nette;
 
-abstract class Entity implements ORM\IEntity, \IteratorAggregate {
-
-	/**
-	 * @primaryKey
-	 * @column(type=integer)
-	 */
-	protected $id;
+abstract class Entity extends ORM\Entity {
 
 	/**
 	 * @column(type=datetime)
@@ -22,31 +16,7 @@ abstract class Entity implements ORM\IEntity, \IteratorAggregate {
 	 */
 	protected $updated;
 
-	public function getIterator() {
-		return new \ArrayIterator($this->toArray());
-	}
-
-	public function toArray() {
-		$data = array();
-		foreach (Nette\Reflection\ClassType::from($this)->getProperties() as $property) {
-			$data[$property->getName()] = $this->{$property->getName()};
-		}
-		return $data;
-	}
-
-	/*
-	 * Vrati hash objektu
-	 * @return string
-	 */
-	public function getObjectHash() {
-		return spl_object_hash($this);
-	}
-
-	public function getId() {
-		return $this->id;
-	}
-
-	public function setCreated(\Nette\DateTime $date) {
+	public function setCreated(Nette\DateTime $date) {
 		$this->created = $date;
 		return $this;
 	}
@@ -55,12 +25,29 @@ abstract class Entity implements ORM\IEntity, \IteratorAggregate {
 		return $this->created;
 	}
 
-	public function setUpdated(\Nette\DateTime $date) {
+	public function setUpdated(Nette\DateTime $date) {
 		$this->updated = $date;
 		return $this;
 	}
 
 	public function getUpdated() {
 		return $this->updated;
+	}
+
+	/**
+	 * @preCreate
+	 */
+	public function created() {
+		$this->created = new Nette\DateTime;
+		return $this;
+	}
+
+	/**
+	 * @preCreate
+	 * @preUpdate
+	 */
+	public function updated() {
+		$this->updated = new Nette\DateTime;
+		return $this;
 	}
 }

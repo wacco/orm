@@ -11,6 +11,13 @@ use ORM;
 class Base extends ORM\Service {
 
 	/**
+	 * @return int
+	 */
+	public function getId() {
+		return $this->entity->getId();
+	}
+
+	/**
 	 * @return Nette\DateTime
 	 */
 	public function getCreated() {

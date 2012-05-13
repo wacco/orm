@@ -2,6 +2,10 @@
 
 namespace ORM;
 
+/**
+ * Repozitrory interface
+ * @author Branislav Vaculčiak
+ */
 interface IRepository {
 
 	public function __construct(Mappers\IMapper $mapper);

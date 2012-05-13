@@ -71,4 +71,14 @@ class Entity {
 		}
 		return $columns;
 	}
+
+	public function getEvents($type) {
+		$columns = array();
+		foreach ($this->class->getMethods() as $method) {
+			if ($method->hasAnnotation($type::NAME)) {
+				$columns[$method->getName()] = $type::from($method);
+			}
+		}
+		return $columns;
+	}
 }

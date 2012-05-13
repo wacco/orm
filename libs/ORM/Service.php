@@ -2,11 +2,13 @@
 
 namespace ORM;
 
+use Nette;
+
 /**
- * Manazer repozitarov
+ * Vrstva sluzieb
  * @author Branislav Vaculčiak
  */
-class Service implements IService {
+class Service extends Nette\Object implements IService {
 
 	/**
 	 * @var IRepository
@@ -25,5 +27,19 @@ class Service implements IService {
 	public function __construct(IRepository $repository, IEntity $entity) {
 		$this->repository = $repository;
 		$this->entity = $entity;
+	}
+
+	/**
+	 * Dynamicke zavolanie metod nad entitou
+	 * @param string
+	 * @param array
+	 */
+	public function __call($name, $args) {
+		$class = new Nette\Reflection\ClassType($this->entity);
+		if ($class->hasMethod($name)) {
+			$method = $class->getMethod($name);
+			return $method->invokeArgs($this->entity, $args);
+		}
+		throw new Nette\MemberAccessException("Call to undefined method $class->name::$name().");
 	}
 }

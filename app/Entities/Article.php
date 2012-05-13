@@ -2,7 +2,7 @@
 
 namespace Entities;
 
-use ORM;
+use Nette, ORM;
 
 /**
  * @entity(table=article)
@@ -38,6 +38,11 @@ class Article extends Entity {
 	 */
 	protected $category;
 
+	/**
+	 * @column(type=datetime)
+	 */
+	protected $published;
+
 	public function __construct() {
 		$this->tags = new ORM\Relationships\ManyToMany($this);
 	}
@@ -70,10 +75,6 @@ class Article extends Entity {
 		return $this->status;
 	}
 
-	public function getCreated() {
-		return $this->created;
-	}
-
 	public function addTag(Tag $tag) {
 		$this->tags->add($tag);
 		return $this;
@@ -95,5 +96,14 @@ class Article extends Entity {
 
 	public function getCategory() {
 		return $this->category;
+	}
+
+	public function setPublished(Nette\DateTime $date) {
+		$this->published = $date;
+		return $this;
+	}
+
+	public function getPublished() {
+		return $this->updated;
 	}
 }

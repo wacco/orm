@@ -30,7 +30,7 @@ class ManyToMany extends Relationship {
 
 	public function getTargetEntity() {
 		if ($this->mapper === null) {
-			throw new \Exception("Nebol zvolený mapper");
+			throw new ORM\Exceptions\Relation("Nebol zvolený mapper");
 		}
 		return $this->mapper->getEntityReflection();
 	}

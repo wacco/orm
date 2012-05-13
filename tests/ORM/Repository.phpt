@@ -28,7 +28,7 @@ Assert::instance('Entities\Article', $repository->find($article->getId()));
 // overim nasetovane a ulozene data
 Assert::same($title, $article->getTitle());
 Assert::same($content, $article->getContent());
-Assert::same($date, $article->getCreated());
+Assert::equal($date, $article->getCreated());
 
 // zistim ci repozitory vracia mapper
 Assert::instance('ORM\Mappers\IMapper', $repository->getMapper());

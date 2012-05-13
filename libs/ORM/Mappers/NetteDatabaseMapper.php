@@ -4,7 +4,7 @@ namespace ORM\Mappers;
 
 use Nette, ORM;
 
-class NetteDatabaseMapper implements IMapper {
+class NetteDatabaseMapper extends Nette\Object implements IMapper {
 
 	/**
 	 * @var Nette\Database\Connection
@@ -18,6 +18,24 @@ class NetteDatabaseMapper implements IMapper {
 	private $entityReflection;
 	private $entityClass;
 	private $stack = array();
+
+	/** @var array */
+	public $onBeforeCreate;
+
+	/** @var array */
+	public $onAfterCreate;
+
+	/** @var array */
+	public $onBeforeUpdate;
+
+	/** @var array */
+	public $onAfterUpdate;
+
+	/** @var array */
+	public $onBeforeDelete;
+
+	/** @var array */
+	public $onAfterDelete;
 
 	public function __construct(Nette\Database\Connection $connection, ORM\IManager $manager, $entityClass) {
         if (strpos($entityClass, ORM\ProxyGenerator::PREFIX) !== false) {
@@ -43,7 +61,7 @@ class NetteDatabaseMapper implements IMapper {
 			$entity = $this->loadProxy($entity, $entity->__primary());
 		}
 		if (!$entity instanceof $this->entityClass) {
-			throw new \Exception("Do mapperu bola vlozena nespravna entita. Ocakavany typ {$this->entityClass}, vlozeny typ " . get_class($entity));
+			throw new ORM\Exceptions\Mapper("Do mapperu bola vlozena nespravna entita. Ocakavany typ {$this->entityClass}, vlozeny typ " . get_class($entity));
 		}
 
 		$data = array(); $old = array();
@@ -86,17 +104,22 @@ class NetteDatabaseMapper implements IMapper {
 //debug($data);
 //debug($data, $old);
 
-
 		if ($entity->getId()) {
 			if (sha1(serialize($data)) != sha1(serialize($old))) {
+				$this->onBeforeUpdate($entity);
+				$data = $this->updateData($data, $entity->toArray());
 				if (!$row = $this->findInStack($entity->getId())) {
 					$this->connection->table($this->entityReflection->getTableName())->get($entity->getId());
 				}
 				$item = $row->update($data);
+				$this->onAfterUpdate($entity);
 			}
 		} else {
+			$this->onBeforeCreate($entity);
+			$data = $this->updateData($data, $entity->toArray());
 			$item = $this->connection->table($this->entityReflection->getTableName())->insert($data);
 			$this->setValue($entity, $reflection, 'id', $item->id);
+			$this->onAfterCreate($entity);
 		}
 		if (isset($item) && $item instanceof Nette\Database\Table\ActiveRow) {
 			$this->addToStack($item);
@@ -113,12 +136,16 @@ class NetteDatabaseMapper implements IMapper {
 
 	public function delete(ORM\IEntity $entity) {
 		if (!$entity instanceof $this->entityClass) {
-			throw new \Exception("Do mapperu bola vlozena nespravna entita. Ocakavany typ {$this->entityClass}, vlozeny typ " . get_class($entity));
+			throw new ORM\Exceptions\Mapper("Do mapperu bola vlozena nespravna entita. Ocakavany typ {$this->entityClass}, vlozeny typ " . get_class($entity));
 		}
+		$this->onBeforeDelete($entity);
 		if ($stackData = $this->findInStack($entity->getId())) {
-			return (bool)$stackData->delete();
+			$ret = (bool)$stackData->delete();
+		} else {
+			$ret = (bool)$this->connection->table($this->entityReflection->getTableName())->get($entity->getId())->delete();		
 		}
-		return (bool)$this->connection->table($this->entityReflection->getTableName())->get($entity->getId())->delete();
+		$this->onAfterDelete($entity);
+		return $ret;
 	}
 
 	public function find($id) {
@@ -126,7 +153,7 @@ class NetteDatabaseMapper implements IMapper {
 			return $this->load($stackData);
 		}
 		if (!$data = $this->connection->table($this->entityReflection->getTableName())->get($id)) {
-			throw new \Exception("Nenasiel som zaznam {$this->entityClass}($id)");
+			throw new ORM\Exceptions\Mapper("Nenasiel som zaznam {$this->entityClass}($id)");
 		}
 		return $this->load($data);
 	}
@@ -140,7 +167,14 @@ class NetteDatabaseMapper implements IMapper {
 	}
 
 
-
+	protected function updateData(array $before, array $after) {
+		foreach ($before as $key => $value) {
+			if (isset($after[$key]) && $before[$key] != $after[$key]) {
+				$before[$key] = $after[$key];
+			}
+		}
+		return $before;
+	}
 
 	protected function addToStack(Nette\Database\Table\ActiveRow $data) {
 		$this->stack[$data->id] = $data;
