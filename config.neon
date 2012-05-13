@@ -1,0 +1,30 @@
+common:
+	php:
+		date.timezone: Europe/Bratislava
+		
+	nette:
+		database:
+			default:
+				dsn: 'mysql:host=127.0.0.1;dbname=orm'
+				user: root
+				password: root
+				debugger: true
+
+	parameters:
+		proxyDir: '%tempDir%/proxies'
+		entityDir: '%appDir%/app/Entities'
+
+	services:
+		database: @nette.database.default
+		manager: ORM\Manager(@database)
+
+		article: @manager::getRepository(Entities\Article)
+		category: @manager::getRepository(Entities\Category)
+		tag: @manager::getRepository(Entities\Tag)
+
+	factories:
+		proxyGenerator: ORM\ProxyGenerator(%entityDir%, %proxyDir%, %tempDir%)
+
+production < common:
+
+development < common:

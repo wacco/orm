@@ -1,0 +1,3 @@
+Disallow: /Doctrine
+Disallow: /Nette
+Disallow: /Symfony
