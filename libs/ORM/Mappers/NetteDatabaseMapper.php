@@ -233,7 +233,7 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 			$relationship = $this->getValue($entity, $reflection, $column->getName());
 
 			list($table, $targetId) = $this->connection->getDatabaseReflection()
-				->getBelongsToReference($this->entityReflection->getTableName(), $column->getTargetEntity()->getTableName());
+				->getBelongsToReference($this->entityReflection->getTableName(), $column->getName());
 
 			if (isset($data[$targetId])) {
 				//$repository = $this->getManager()->getRepository($column->getTargetClassName());

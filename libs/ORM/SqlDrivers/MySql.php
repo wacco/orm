@@ -156,6 +156,8 @@ class MySql {
 					. ($column->isPrimaryKey() ? ' ' . self::AUTO_INCREMENT : null);
 			case 'bool':
 				return 'tinyint(1) ' . self::UNSIGNED . " DEFAULT '0'";
+			case 'boolean':
+				return 'tinyint(1) ' . self::UNSIGNED . " DEFAULT '0'";
 			case 'float':
 				return 'float'
 					. '(' . ($column->getLength() ? $column->getLength() : self::DEFAULT_INT_LENGTH) . ')'
