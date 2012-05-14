@@ -44,7 +44,7 @@ class SqlGenerator {
 				foreach ($entity->getColumns() as $column) {
 					$driver->addColumn($column);
 				}
-				$output .= $driver . "\n\n";
+				$output .= $driver->generate() . "\n\n";
 			}
 		}
 		$output .= $driver->getPostfix();

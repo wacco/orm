@@ -69,7 +69,7 @@ class MySql {
 		}
 		foreach ($this->entity->getRelationships('ORM\Reflection\ManyToOne') as $column) {
 			$columns[] = $this->slash($column->getColumnName()) . " " . $this->generateColumnType($column);
-			$columns[] = $this->generateForeignKey($column->getTargetEntity());
+			$columns[] = $this->generateForeignKey($column->getName() . '_id', $column->getTargetEntity());
 		}
 
 		$output .= implode(",\n", $columns);
@@ -81,7 +81,9 @@ class MySql {
 
 		foreach ($this->entity->getRelationships('ORM\Reflection\ManyToMany') as $column) {
 			if (!in_array($column->getPairTable(), $this->pairs)) {
+				array_push($this->pairs, $column->getPairTable());
 				$pairTableName = $column->getPairTable();
+				$pairTable = array();
 				$pairTable[] = $this->slash('id') . ' int(10) unsigned NOT NULL AUTO_INCREMENT';
 				$pairTable[] = $this->slash($column->getEntity()->getTableName() . '_id'). ' int(10) unsigned NOT NULL';
 				$pairTable[] = $this->slash($column->getTargetEntity()->getTableName() . '_id') . ' int(10) unsigned NOT NULL';
@@ -89,10 +91,9 @@ class MySql {
 				$pairTable[] = self::UNIQUE_KEY . ' ' . $this->slash($column->getPairTable())
 					. ' (' . $this->slash($column->getTargetEntity()->getTableName() . '_id')
 					. ',' . $this->slash($column->getEntity()->getTableName() . '_id') . ')';
-				$pairTable[] = $this->generateForeignKey($column->getEntity());
-				$pairTable[] = $this->generateForeignKey($column->getTargetEntity());
-				array_push($this->pairs, $column->getPairTable());
-
+				$pairTable[] = $this->generateForeignKey($column->getEntity()->getTableName() . '_id', $column->getEntity());
+				$pairTable[] = $this->generateForeignKey($column->getTargetEntity()->getTableName() . '_id', $column->getTargetEntity());
+				
 				$output .= "\n\nDROP TABLE IF EXISTS " . $this->slash($pairTableName) . ";\n\n";
 				$output .= "CREATE TABLE " . $this->slash($pairTableName) . " (\n";
 				$output .= implode(",\n", $pairTable);
@@ -131,10 +132,8 @@ class MySql {
 			. "/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;\n";
 	}
 
-	private function generateForeignKey($target) {
-		$reference = $target->getTableName() . '_id';
-		return self::KEY . ' ' . $this->slash($reference)
-			. ' (' . $this->slash($reference) . "),\n"
+	private function generateForeignKey($reference, $target) {
+		return self::KEY . ' ' . $this->slash($reference) . ' (' . $this->slash($reference) . "),\n"
 			. self::CONSTRAINT . ' ' . $this->slash($target->getTableName() . Nette\Utils\Strings::random(4, '0-9')) . ' '
 			. self::FOREIGN_KEY . ' (' . $this->slash($reference) . ') '
 			. self::REFERENCES .  ' ' . $this->slash($target->getTableName())
@@ -150,11 +149,13 @@ class MySql {
 		}
 		switch ($column->getType()) {
 			case 'integer':
-				return 'integer'
+				return 'int'
 					. '(' . ($column->getLength() ? $column->getLength() : self::DEFAULT_INT_LENGTH) . ')'
 					. ($column->isUnsigned() ? ' ' . self::UNSIGNED : null)
 					. ($column->isNullable() ? null : ' ' . self::NOT_NULL)
 					. ($column->isPrimaryKey() ? ' ' . self::AUTO_INCREMENT : null);
+			case 'bool':
+				return 'tinyint(1) ' . self::UNSIGNED . " DEFAULT '0'";
 			case 'float':
 				return 'float'
 					. '(' . ($column->getLength() ? $column->getLength() : self::DEFAULT_INT_LENGTH) . ')'
@@ -162,6 +163,10 @@ class MySql {
 					. ($column->isNullable() ? null : ' ' . self::NOT_NULL)
 					. ($column->isPrimaryKey() ? ' ' . self::AUTO_INCREMENT : null);
 			case 'varchar':
+				return 'varchar' . '(' . ($column->getLength() ? $column->getLength() : self::DEFAULT_STRING_LENGTH) . ')'
+					. ($column->isNullable() ? null : ' ' . self::NOT_NULL)
+					. ($column->isNullable() ? ' ' . self::DEFAULT_WORD . ' ' . ($column->getDefaultValue() === null ? self::DEFAULT_VALUE : "'{$column->getDefaultValue()}'") : null);
+			case 'string':
 				return 'varchar' . '(' . ($column->getLength() ? $column->getLength() : self::DEFAULT_STRING_LENGTH) . ')'
 					. ($column->isNullable() ? null : ' ' . self::NOT_NULL)
 					. ($column->isNullable() ? ' ' . self::DEFAULT_WORD . ' ' . ($column->getDefaultValue() === null ? self::DEFAULT_VALUE : "'{$column->getDefaultValue()}'") : null);
@@ -173,6 +178,11 @@ class MySql {
 				return 'text'
 					. ($column->isNullable() ? null : ' ' . self::NOT_NULL)
 					. ($column->isNullable() ? ' ' . self::DEFAULT_WORD . ' ' . ($column->getDefaultValue() === null ? self::DEFAULT_VALUE : "'{$column->getDefaultValue()}'") : null);
+			case 'longtext':
+				return 'longtext'
+					. ($column->isNullable() ? null : ' ' . self::NOT_NULL)
+					. ($column->isNullable() ? ' ' . self::DEFAULT_WORD . ' ' . ($column->getDefaultValue() === null ? self::DEFAULT_VALUE : "'{$column->getDefaultValue()}'") : null);
+
 		}
 	}
 

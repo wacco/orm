@@ -1,7 +1,6 @@
 <?php
 
 use Nette\Diagnostics\Debugger,
-	Nette\Utils\Html,
 	Nette\Utils\Strings;
 
 // Load Nette Framework
@@ -47,4 +46,4 @@ $articleService->setContent('Obrash stránky');
 $articleService->save();
 //$articleService->publish();
 
-debug($articleService);
+//debug($articleService);
