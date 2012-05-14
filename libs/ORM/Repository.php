@@ -44,24 +44,7 @@ class Repository implements IRepository {
 	 * @param IEntity
 	 */
 	public function save(IEntity $item) {
-		$entity = Reflection\Entity::from($item);
-		foreach ($entity->getEvents('ORM\Reflection\PreCreate') as $event) {
-			$this->mapper->onBeforeCreate[] = array($item, $event->getMethod()->getName());
-		}
-		foreach ($entity->getEvents('ORM\Reflection\PreUpdate') as $event) {
-			$this->mapper->onBeforeUpdate[] = array($item, $event->getMethod()->getName());
-		}
-
-		$ret = $this->mapper->save($item);
-
-		foreach ($entity->getEvents('ORM\Reflection\PostCreate') as $event) {
-			$this->mapper->onAfterCreate[] = array($item, $event->getMethod()->getName());
-		}
-		foreach ($entity->getEvents('ORM\Reflection\PostUpdate') as $event) {
-			$this->mapper->onAfterUpdate[] = array($item, $event->getMethod()->getName());
-		}
-		
-		return $ret;
+		return $this->mapper->save($item);
 	}
 
 	/**
@@ -70,18 +53,7 @@ class Repository implements IRepository {
 	 * @return bool
 	 */
 	public function delete(IEntity $item) {
-		$entity = Reflection\Entity::from($item);
-		foreach ($entity->getEvents('ORM\Reflection\PreDelete') as $event) {
-			$this->mapper->onBeforeDelete[] = array($item, $event->getMethod()->getName());
-		}
-
-		$ret = $this->mapper->delete($item);
-
-		foreach ($entity->getEvents('ORM\Reflection\PostDelete') as $event) {
-			$this->mapper->onAfterDelete[] = array($item, $event->getMethod()->getName());
-		}
-
-		return $ret;
+		return $this->mapper->delete($item);
 	}
 
 	/**

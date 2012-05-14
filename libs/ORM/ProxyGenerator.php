@@ -67,7 +67,7 @@ class ProxyGenerator {
 		$documents = array();
 		foreach ($class->getAnnotations() as $anotationName => $annotation) {
 			$ann = array();
-			foreach ($annotation[0] as $key => $value) {
+			foreach ((array)$annotation[0] as $key => $value) {
 				$ann[] = "$key=$value";
 			}
 			$documents[] = "@$anotationName(" . implode(', ', $ann) . ")";

@@ -46,6 +46,38 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
         $this->manager = $manager;
         $this->entityClass = $entityClass;
         $this->entityReflection = ORM\Reflection\Entity::from($entityClass);
+
+		// nastavenie eventov
+		foreach ($this->entityReflection->getEvents('ORM\Reflection\PreCreate') as $event) {
+			$this->onBeforeCreate[] = function($item) use($event) {
+				$item->{$event->getMethod()->getName()}();
+			};
+		}
+		foreach ($this->entityReflection->getEvents('ORM\Reflection\PreUpdate') as $event) {
+			$this->onBeforeUpdate[] = function($item) use($event) {
+				$item->{$event->getMethod()->getName()}();
+			};
+		}
+		foreach ($this->entityReflection->getEvents('ORM\Reflection\PostCreate') as $event) {
+			$this->onAfterCreate[] = function($item) use($event) {
+				$item->{$event->getMethod()->getName()}();
+			};
+		}
+		foreach ($this->entityReflection->getEvents('ORM\Reflection\PostUpdate') as $event) {
+			$this->onAfterUpdate[] = function($item) use($event) {
+				$item->{$event->getMethod()->getName()}();
+			};
+		}
+		foreach ($this->entityReflection->getEvents('ORM\Reflection\PreDelete') as $event) {
+			$this->onBeforeDelete[] = function($item) use($event) {
+				$item->{$event->getMethod()->getName()}();
+			};
+		}
+		foreach ($this->entityReflection->getEvents('ORM\Reflection\PostDelete') as $event) {
+			$this->onAfterDelete[] = function($item) use($event) {
+				$item->{$event->getMethod()->getName()}();
+			};
+		}
 	}
 
 	public function getEntityReflection() {
@@ -81,8 +113,9 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 		// ziskam data pre vztah ManyToOne
 		foreach ($this->entityReflection->getRelationships('ORM\Reflection\ManyToOne') as $column) {
 			$value = $this->getValue($entity, $reflection, $column->getName());
+
 			list($table, $column) = $this->connection->getDatabaseReflection()
-				->getBelongsToReference($column->getName(), $column->getName());
+				->getBelongsToReference($this->entityReflection->getTableName(), $column->getName());
 
 			if ($value === null) {
 				$data[$column] = null;
