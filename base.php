@@ -25,13 +25,21 @@ $repository = new Repositories\ArticleRepository(
 	new ORM\Mappers\NetteDatabaseMapper($container->database, $manager, 'Entities\Article')
 );
 
+$tag1 = new Entities\Tag;
+$tag1->setName('Nazov tagu ' . Strings::random(4));
+$tag2 = new Entities\Tag;
+$tag2->setName('Nazov tagu ' . Strings::random(4));
+
+
 $article = new Entities\Article;
 $article->setTitle('Moja titulka ' . Strings::random(4));
 $article->setContent('Obrash stránky');
 $article->setCreated(new Nette\DateTime);
+$article->addTag($tag1);
+$article->addTag($tag2);
 
 $repository->save($article);
 
-debug($article->getId());
+debug($article);
 
 $repository->delete($article);
