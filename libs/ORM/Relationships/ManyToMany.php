@@ -12,6 +12,7 @@ class ManyToMany extends Relationship {
 		foreach ($this->list as $child) {
 			$target = $this->getTargetEntity();
 			$entity = $this->mapper->save($child);
+			$this->load();
 
 			if (!$this->wasLoad($child)) {
 				list($table, $sourceId) = $connection->getDatabaseReflection()

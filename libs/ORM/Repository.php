@@ -24,6 +24,24 @@ class Repository implements IRepository {
 	}
 
 	/**
+	 * Magicky finder
+	 * @param string
+	 * @param array
+	 * @return mixed
+	 */
+	public function __call($name, $args) {
+		if (strpos($name, 'findBy') === 0) {
+			$param = strtolower(substr($name, 6));
+			return $this->findBy(array($param => $args));
+		}
+		if (strpos($name, 'findOneBy') === 0) {
+			$param = strtolower(substr($name, 9));
+			return $this->findOneBy(array($param => $args));
+		}
+		throw new Nette\MemberAccessException("Call to undefined method " . get_class() . "::$name().");
+	}
+
+	/**
 	 * Vrati pouzity mapper
 	 * @return Mappers\IMapper
 	 */
@@ -72,6 +90,15 @@ class Repository implements IRepository {
 	 */
 	public function findBy(array $values) {
 		return $this->mapper->findBy($values);
+	}
+
+	/**
+	 * Vyhlada entitu podla kriterii
+	 * @param array
+	 * @return IEntity
+	 */
+	public function findOneBy(array $values) {
+		return $this->mapper->findOneBy($values);
 	}
 
 	/**

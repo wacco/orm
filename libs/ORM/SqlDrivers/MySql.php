@@ -71,6 +71,10 @@ class MySql {
 			$columns[] = $this->slash($column->getColumnName()) . " " . $this->generateColumnType($column);
 			$columns[] = $this->generateForeignKey($column->getName() . '_id', $column->getTargetEntity());
 		}
+		foreach ($this->entity->getRelationships('ORM\Reflection\OneToOne') as $column) {
+			$columns[] = $this->slash($column->getColumnName()) . " " . $this->generateColumnType($column);
+			$columns[] = $this->generateForeignKey($column->getName() . '_id', $column->getTargetEntity());
+		}
 
 		$output .= implode(",\n", $columns);
 		$output .= ", \n" . self::PRIMARY_KEY . ' (' . $this->slash($this->entity->getPrimaryKey()->getName()) . ')';

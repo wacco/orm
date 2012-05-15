@@ -197,6 +197,11 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 		return $this->findAll()->where($values);
 	}
 
+	public function findOneBy(array $values) {
+		$data = $this->connection->table($this->entityReflection->getTableName())->where($values)->fetch();
+		return $data ? $this->load($data) : false;
+	}
+
 	public function findAll() {
 		return new ORM\Collections\NetteDatabaseCollection($this, $this->connection->table($this->entityReflection->getTableName()));
 	}
@@ -262,7 +267,9 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 			$relationship = $this->getValue($entity, $reflection, $column->getName());
 			$selection = $data->related($column->getTargetEntity()->getTableName());
 			$mapper = $this->getManager()->getRepository($column->getTargetClassName())->getMapper();
-			$relationship->setMapper($mapper)->setSelection($selection);
+			if ($relationship instanceof IRelationship && $mapper instanceof IMapper) {
+				$relationship->setMapper($mapper)->setSelection($selection);
+			}
 		}
 
 		return $entity;

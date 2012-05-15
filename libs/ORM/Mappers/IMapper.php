@@ -14,5 +14,7 @@ interface IMapper {
 
 	public function findBy(array $values);
 
+	public function findOneBy(array $values);
+
 	public function findAll();
 }
