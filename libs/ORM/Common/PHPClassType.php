@@ -2,13 +2,13 @@
 
 namespace ORM\Common;
 
-use Nette;
+use Nette, Nette\Utils\PhpGenerator;
 
 /**
  * Manazer repozitarov
  * @author Branislav Vaculčiak
  */
-class PHPClassType extends Nette\Utils\PhpGenerator\ClassType {
+class PHPClassType extends PhpGenerator\ClassType {
 
 	/** @var string */
 	private $namespace = "";
@@ -25,13 +25,13 @@ class PHPClassType extends Nette\Utils\PhpGenerator\ClassType {
 	public function __toString() {
 		$consts = array();
 		foreach ($this->consts as $name => $value) {
-			$consts[] = "const $name = " . Helpers::dump($value) . ";\n";
+			$consts[] = "const $name = " . PhpGenerator\Helpers::dump($value) . ";\n";
 		}
 		$properties = array();
 		foreach ($this->properties as $property) {
 			$properties[] = ($property->documents ? str_replace("\n", "\n * ", "/**\n" . implode("\n", (array) $property->documents)) . "\n */\n" : '')
 				. $property->visibility . ' $' . $property->name
-				. ($property->value === NULL ? '' : ' = ' . Helpers::dump($property->value))
+				. ($property->value === NULL ? '' : ' = ' . PhpGenerator\Helpers::dump($property->value))
 				. ";\n";
 		}
 		return Nette\Utils\Strings::normalize(

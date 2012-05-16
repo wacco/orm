@@ -31,8 +31,8 @@ class Category extends Entity {
 	protected $articles;
 
 	public function __construct() {
-		$this->children = new ORM\Relationships\OneToMany($this);
-		$this->articles = new ORM\Relationships\OneToMany($this);
+		$this->children = new ORM\Collections\ArrayCollection;
+		$this->articles = new ORM\Collections\ArrayCollection;
 	}
 
 	public function setName($name) {

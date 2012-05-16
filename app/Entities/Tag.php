@@ -21,7 +21,7 @@ class Tag extends Entity {
 	protected $articles;
 
 	public function __construct() {
-		$this->articles = new ORM\Relationships\ManyToMany($this);
+		$this->articles = new ORM\Collections\ArrayCollection;
 	}
 
 	public function setName($name) {

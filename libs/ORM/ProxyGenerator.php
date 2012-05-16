@@ -79,7 +79,10 @@ class ProxyGenerator {
 		$proxy->setDocuments($documents);
 		$proxy->addExtend('\\' . $class->getName());
 
-		$mapper = $proxy->addProperty('mapper');
+		$mapper = $proxy->addProperty('_mapper');
+		$mapper->setVisibility('private');
+
+		$mapper = $proxy->addProperty('_isLoaded')->setValue(false);
 		$mapper->setVisibility('private');
 
 		$proxyMethod = $proxy->addMethod('__construct');
@@ -90,12 +93,22 @@ class ProxyGenerator {
 
 		$proxyMethod = $proxy->addMethod('__load');
 		$proxyMethod->addBody('$this->_mapper->loadProxy($this, $this->_primary);');
+		$proxyMethod->addBody('$this->_isLoaded = TRUE;');
+
+		$proxyMethod = $proxy->addMethod('__isLoad');
+		$proxyMethod->addBody('return $this->_isLoaded;');
 
 		$proxyMethod = $proxy->addMethod('__primary');
 		$proxyMethod->addBody('return $this->_primary;');
 
+		$proxyMethod = $proxy->addMethod('getId');
+		$proxyMethod->addBody('return $this->_primary;');
+
+		$proxyMethod = $proxy->addMethod('getObjectHash');
+		$proxyMethod->addBody('return parent::getObjectHash();');
+
 		foreach ($class->getMethods() as $method) {
-			if ($method->isConstructor()) {
+			if ($method->isConstructor() || $method->getName() == 'getId' || $method->getName() == 'getObjectHash') {
 				continue;
 			}
 			$args = array();

@@ -43,7 +43,7 @@ $categoryRepository->save($cat4);
 
 
 // overim zhodnu kategoriu / objekt
-Assert::instance('ORM\Relationships\OneToMany', $cat->getChildren());
+Assert::instance('ORM\Collections\ArrayCollection', $cat->getChildren());
 
 // overim zhodnu kategoriu / objekt
 Assert::same(4, count($cat->getChildren()));

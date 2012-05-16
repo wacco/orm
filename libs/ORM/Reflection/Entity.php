@@ -43,11 +43,22 @@ class Entity {
 		return $this->class->getName();
 	}
 
+	public function getReferenceKeyName() {
+		return $this->getTableName() . '_id';
+	}
+
 	public function getPrimaryKey() {
 		foreach ($this->class->getProperties() as $property) {
 			if ($property->hasAnnotation(PrimaryKey::NAME)) {
 				return PrimaryKey::from($property);
 			}
+		}
+		return false;
+	}
+
+	public function getProperty($name) {
+		if ($this->class->hasProperty($name)) {
+			return $this->class->getProperty($name);
 		}
 		return false;
 	}

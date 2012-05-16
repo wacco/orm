@@ -44,9 +44,8 @@ class Article extends Entity {
 	protected $published;
 
 	public function __construct() {
-		$this->tags = new ORM\Relationships\ManyToMany($this);
+		$this->tags = new ORM\Collections\ArrayCollection;
 	}
-
 
 	public function setTitle($title) {
 		$this->title = $title;
