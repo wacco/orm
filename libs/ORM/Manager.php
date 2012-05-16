@@ -25,7 +25,7 @@ class Manager implements IManager {
 	 */
 	public function __construct(Nette\Database\Connection $connection) {
 		//TODO: treba vyriesit zavyslost na databaze, pripadne na cache atd...
-		$this->connection = $connection;
+		$this->connection = $connection;debug($connection);
 		$this->container = new Nette\DI\Container;
 	}
 

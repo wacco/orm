@@ -53,5 +53,6 @@ $_SERVER['REQUEST_TIME'] = 1234567890;
 $_ENV = $_GET = $_POST = array();
 
 if (PHP_SAPI !== 'cli') {
-	header('Content-Type: text/plain; charset=utf-8');
+	Nette\Diagnostics\Debugger::enable(false);
+	header('Content-Type: text/html; charset=utf-8');
 }

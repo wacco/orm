@@ -8,7 +8,7 @@ require_once __DIR__ . '/TestRunner.php';
 /**
  * Help
  */
-if (!isset($_SERVER['argv'][1])) { ?>
+if (0 && !isset($_SERVER['argv'][1])) { ?>
 Usage:
 	php RunTests.php [options] [file or directory]
 
@@ -33,7 +33,9 @@ try {
 
 
 	$manager = new TestRunner;
-	$manager->parseArguments();
+	//$manager->parseArguments();
+	$manager->path = __DIR__ . '/../ORM';
+	$manager->phpBinary = 'php';
 	$res = $manager->run();
 	die($res ? 0 : 1);
 

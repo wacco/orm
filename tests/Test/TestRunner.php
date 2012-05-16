@@ -64,7 +64,7 @@ class TestRunner
 		foreach ($files as $entry) {
 			$entry = (string) $entry;
 			$info = pathinfo($entry);
-			if (!isset($info['extension']) || $info['extension'] !== 'phpt') {
+			if (!isset($info['extension']) || ($info['extension'] !== 'phpt' && $info['extension'] !== 'php')) {
 				continue;
 			}
 
@@ -126,7 +126,7 @@ class TestRunner
 	 */
 	public function parseArguments()
 	{
-		$this->phpBinary = 'php-cgi';
+		$this->phpBinary = 'php';
 		$this->phpArgs = '';
 		$this->phpEnvironment = '';
 		$this->path = getcwd(); // current directory

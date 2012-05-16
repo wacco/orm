@@ -16,14 +16,30 @@ function createTempImg() {
 
 function debug() {
 	$params = func_get_args();
+	$trace = debug_backtrace();
+	$trace = current($trace);
+
+	if (PHP_SAPI !== 'cli') {
+		if (isset($params) && is_array($params)) {	
+			foreach ($params as $array) {
+				if (!Nette\Environment::getHttpRequest()->isAjax()) {
+					Nette\Diagnostics\Debugger::barDump($array, "{$trace['file']}:{$trace['line']}");
+				} else {
+					Nette\Diagnostics\Debugger::fireLog($array);
+				}
+			}
+		}
+		return;
+	}
+
 	$message = "";
 	foreach ((array) $params as $param) {
 		$message .= "\n#  " . dumpVar($param);
 	}
-	$trace = debug_backtrace();
-	$trace = current($trace);
+	
+	
 	if (isset($trace['line'])) {
-		$message .= "\n#  file: $trace[file]:$trace[line]";
+		$message .= "\n#  file: {$trace['file']}:{$trace['line']}";
 	}
 	echo "\n$message";
 }
