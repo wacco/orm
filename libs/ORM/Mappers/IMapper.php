@@ -6,9 +6,9 @@ use ORM;
 
 interface IMapper {
 
-	public function save(ORM\IEntity $entity);
+	public function save(ORM\IEntity $entity, $cascade = true);
 
-	public function delete(ORM\IEntity $entity);
+	public function delete(ORM\IEntity $entity, $cascade = true);
 
 	public function find($id);
 
@@ -17,4 +17,6 @@ interface IMapper {
 	public function findOneBy(array $values);
 
 	public function findAll();
+
+	public function getMany(ORM\Collections\PersistentCollection $collection);
 }

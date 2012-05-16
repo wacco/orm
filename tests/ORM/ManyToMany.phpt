@@ -28,7 +28,7 @@ $article->addTag($tag2);
 
 
 // overim zhodnu kategoriu / objekt
-Assert::instance('ORM\Relationships\ManyToMany', $article->getTags());
+Assert::instance('ORM\Collections\ArrayCollection', $article->getTags());
 
 // overim zhodnu kategoriu / objekt
 Assert::same(2, count($article->getTags()));
@@ -48,7 +48,7 @@ foreach ($article->getTags() as $tag) {
 $article = $articleRepository->find($article->getId());
 
 // overim zhodnu kategoriu / objekt
-Assert::instance('ORM\Relationships\ManyToMany', $article->getTags());
+Assert::instance('ORM\Collections\PersistentCollection', $article->getTags());
 
 // overim zhodnu kategoriu / objekt
 Assert::same(2, count($article->getTags()));

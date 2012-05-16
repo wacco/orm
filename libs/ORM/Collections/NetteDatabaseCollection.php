@@ -4,7 +4,7 @@ namespace ORM\Collections;
 
 use Nette\Database\Table\Selection, ORM\Mappers\IMapper;
 
-class NetteDatabaseCollection extends Collection implements \Iterator {
+class NetteDatabaseCollection extends ArrayCollection implements \Iterator {
 
 	protected $selection;
 

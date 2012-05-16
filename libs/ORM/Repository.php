@@ -61,8 +61,8 @@ class Repository implements IRepository {
 	 * Ulozi entitu
 	 * @param IEntity
 	 */
-	public function save(IEntity $item) {
-		return $this->mapper->save($item);
+	public function save(IEntity $item, $cascade = true) {
+		return $this->mapper->save($item, $cascade);
 	}
 
 	/**
@@ -70,8 +70,8 @@ class Repository implements IRepository {
 	 * @param IEntity
 	 * @return bool
 	 */
-	public function delete(IEntity $item) {
-		return $this->mapper->delete($item);
+	public function delete(IEntity $item, $cascade = true) {
+		return $this->mapper->delete($item, $cascade);
 	}
 
 	/**
