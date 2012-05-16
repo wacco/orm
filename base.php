@@ -20,10 +20,12 @@ $configurator->createRobotLoader()
 	->register();
 $container = $configurator->createContainer();
 
+/*
 $manager = new ORM\Manager($container->database);
 $repository = new Repositories\ArticleRepository(
 	new ORM\Mappers\NetteDatabaseMapper($container->database, $manager, 'Entities\Article')
 );
+*/
 
 $tag1 = new Entities\Tag;
 $tag1->setName('Nazov tagu ' . Strings::random(4));
@@ -31,15 +33,23 @@ $tag2 = new Entities\Tag;
 $tag2->setName('Nazov tagu ' . Strings::random(4));
 
 
-$article = new Entities\Article;
+$article = $container->article->find(649);
+//$article = new Entities\Article;
 $article->setTitle('Moja titulka ' . Strings::random(4));
 $article->setContent('Obrash stránky');
 $article->setCreated(new Nette\DateTime);
-$article->addTag($tag1);
-$article->addTag($tag2);
+//$article->addTag($tag1);
+//$article->addTag($tag2);
 
-$repository->save($article);
+//$container->article->save($article);
 
-debug($article);
+//debug($article);
+$mapper = $container->tag->getMapper();
 
-$repository->delete($article);
+debug($mapper->getManyToMany($article->getTags()));
+
+
+
+//$mapper->getManyToMany();
+
+//$container->article->delete($article);

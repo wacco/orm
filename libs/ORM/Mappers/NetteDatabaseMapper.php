@@ -309,4 +309,21 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 		$idProp->setAccessible(TRUE);
 		$idProp->setValue($entity, $value);
 	}
+
+
+
+	public function getManyToMany(ORM\Relationships\ManyToMany $relation) {
+		$id = 649;
+
+		$source = ORM\Reflection\Entity::from('Entities\Article');
+		
+		debug($source);
+		//debug($relation);
+
+		$selection = $this->connection->table('tag')
+			->where('article_tag:article_id')
+			->where('article_id', $id);
+
+		debug($selection->fetchPairs('id'));
+	}
 }
