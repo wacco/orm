@@ -12,6 +12,8 @@ common:
 
 	parameters:
 		proxyDir: '%tempDir%/proxies'
+		entitiesConfigDir: '%appDir%/app/configs/Entities'
+		entityTempDir: '%tempDir%/entities'
 		entityDir: '%appDir%/app/Entities'
 
 	services:
@@ -23,6 +25,7 @@ common:
 		tag: @manager::getRepository(Entities\Tag)
 
 	factories:
+		entityGenerator: ORM\EntityGenerator(%entitiesConfigDir%, %entityTempDir%, @cacheStorage)
 		proxyGenerator: ORM\ProxyGenerator(%entityDir%, %proxyDir%, %tempDir%)
 		sqlGenerator: ORM\SqlGenerator(%entityDir%)
 

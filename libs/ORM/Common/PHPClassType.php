@@ -11,15 +11,8 @@ use Nette, Nette\Utils\PhpGenerator;
 class PHPClassType extends PhpGenerator\ClassType {
 
 	/** @var string */
-	private $namespace = "";
+	public $namespace;
 
-	/**
-	 * Set namespace name
-	 * @param string
-	 */
-	public function setNamespace($namespace) {
-		$this->namespace = $namespace;
-	}
 
 	/** @return string  PHP code */
 	public function __toString() {
@@ -44,7 +37,7 @@ class PHPClassType extends PhpGenerator\ClassType {
 			. $this->name . ' '
 			. ($this->extends ? 'extends ' . implode(', ', (array) $this->extends) . ' ' : '')
 			. ($this->implements ? 'implements ' . implode(', ', (array) $this->implements) . ' ' : '')
-			. "\n{\n\n"
+			. "{\n\n"
 			. Nette\Utils\Strings::indent(
 				($this->consts ? implode('', $consts) . "\n\n" : '')
 				. ($this->properties ? implode("\n", $properties) . "\n\n" : '')

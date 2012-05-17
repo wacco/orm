@@ -1,0 +1,36 @@
+namespace: Entities
+
+use:
+	- Nette
+	- ORM
+
+
+
+class: 
+	name: Article
+	extends: Entity
+	implements: ORM\IEntity
+	annotations:
+		entity: [table: article]
+
+		repository:
+			calss: Repositories\ArticleRepository
+			mapper: ORM\Mappers\NetteDatabaseMapper
+
+
+	properties:
+		title:  
+			propertyValue: FALSE
+			- toto je koment
+			var: string
+			- dalsi koment
+			column: [type: varchar, nullable: false]
+			testAnn: [name: Test, value: 34]
+		category: 
+			propertyValue: NULL
+			manyToOne: [target: Category, mappedBy: articles]
+		tags: 
+			propertyName: haha
+			manyToMany: [target: Tag, mappedBy: articles]
+		published: 
+			column: [type: datetime, nullable: true]

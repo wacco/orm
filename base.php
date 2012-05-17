@@ -19,6 +19,8 @@ $configurator->createRobotLoader()
 	->addDirectory(__DIR__ . '/libs')
 	->register();
 $container = $configurator->createContainer();
+$container->createEntityGenerator();
+die;
 $container->createProxyGenerator();
 
 /*

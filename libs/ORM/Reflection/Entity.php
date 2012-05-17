@@ -72,12 +72,30 @@ class Entity {
 		}
 		return $columns;
 	}
-
-	public function getRelationships($type) {
+	/**
+	 * 
+	 * @param  array|string|NULL $filter
+	 * @return array
+	 */
+	public function getRelationships($filter = NULL) {
 		$columns = array();
-		foreach ($this->class->getProperties() as $property) {
-			if ($property->hasAnnotation($type::NAME)) {
-				$columns[$property->getName()] = $type::from($property);
+		if($filter === NULL) {
+			$filter = array(
+				'ORM\Reflection\ManyToOne',
+				'ORM\Reflection\ManyToMany',
+				'ORM\Reflection\OneToMany',
+				'ORM\Reflection\OneToOne',
+			);
+		}
+		if(is_array($filter)) {
+			foreach ($filter as $type) {
+				$columns += $this->getRelationships($type);
+			}
+		} else {
+			foreach ($this->class->getProperties() as $property) {
+				if ($property->hasAnnotation($filter::NAME)) {
+					$columns[$property->getName()] = $filter::from($property);
+				}
 			}
 		}
 		return $columns;

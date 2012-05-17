@@ -26,3 +26,8 @@ class Repository extends \Exception {}
  * @author Branislav Vaculčiak
  */
 class Relation extends \Exception {}
+
+/**
+ * @author Dávid Ďurika
+ */
+class EntityGenerator extends \Exception {}

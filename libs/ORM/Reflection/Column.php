@@ -26,10 +26,12 @@ class Column {
 		return $this->property->getAnnotation(static::NAME)->type;
 	}
 
+	public function getValue() {
+		$this->property->setAccessible(true);
+		return $this->property->getValue();
+	}
 	public function getDefaultValue() {
-		return isset($this->property->getAnnotation(static::NAME)->default)
-			? $this->property->getAnnotation(static::NAME)->default
-			: null;
+		return $this->getValue();
 	}
 
 	public function getLength() {
@@ -39,8 +41,8 @@ class Column {
 	}
 
 	public function isNullable() {
-		return isset($this->property->getAnnotation(static::NAME)->null)
-			? (bool)$this->property->getAnnotation(static::NAME)->null
+		return isset($this->property->getAnnotation(static::NAME)->nullable)
+			? (bool)$this->property->getAnnotation(static::NAME)->nullable
 			: true;
 	}
 

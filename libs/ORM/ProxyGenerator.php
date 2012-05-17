@@ -66,12 +66,12 @@ class ProxyGenerator {
 		$name = self::PREFIX . $class->getName();
 
 		$documents = array();
-		foreach ($class->getAnnotations() as $anotationName => $annotation) {
+		foreach ($class->getAnnotations() as $annotationName => $annotation) {
 			$ann = array();
 			foreach ((array)$annotation[0] as $key => $value) {
 				$ann[] = "$key=$value";
 			}
-			$documents[] = "@$anotationName(" . implode(', ', $ann) . ")";
+			$documents[] = "@$annotationName(" . implode(', ', $ann) . ")";
 		}
 		
 		$proxy = new Common\PHPClassType(trim(substr($name, strrpos($name, '\\')), '\\'));
