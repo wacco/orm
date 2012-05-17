@@ -1,0 +1,19 @@
+namespace: Entities
+
+use:
+	- Nette
+	- ORM
+
+class: [name: Article, extends: Entity]
+table: [name: article]
+
+repository:
+	calss: Repositories\ArticleRepository
+	mapper: ORM\Mappers\NetteDatabaseMapper
+
+
+properties:
+	title: [type: varchar, nullable: false]
+	category: [type: manyToOne, target: Category, mappedBy: articles]
+	tags: [type: manyToMany, target: Tag, mappedBy: articles]
+	published: [type: datetime, nullable: true]
