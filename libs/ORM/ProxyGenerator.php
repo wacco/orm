@@ -30,6 +30,7 @@ class ProxyGenerator {
 	/**
 	 * @param string
 	 * @param string
+	 * @param string
 	 */
 	public function __construct($entityDir, $proxyDir, $tempDir) {
 		$this->entityDir = $entityDir;
