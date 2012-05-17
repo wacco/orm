@@ -1,7 +1,7 @@
 common:
 	php:
 		date.timezone: Europe/Bratislava
-		
+
 	nette:
 		database:
 			default:

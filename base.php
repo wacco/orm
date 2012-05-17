@@ -12,11 +12,11 @@ Debugger::enable();
 
 // Load configuration from config.neon
 $configurator = new Nette\Config\Configurator;
-$configurator->setTempDirectory('./temp');
-$configurator->addConfig('./config.neon');
+$configurator->setTempDirectory(__DIR__ . '/temp');
+$configurator->addConfig(__DIR__ . '/config.neon');
 $configurator->createRobotLoader()
-	->addDirectory('./app')
-	->addDirectory('./libs')
+	->addDirectory(__DIR__ . '/app')
+	->addDirectory(__DIR__ . '/libs')
 	->register();
 $container = $configurator->createContainer();
 $container->createProxyGenerator();
