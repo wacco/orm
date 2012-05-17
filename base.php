@@ -44,12 +44,12 @@ $article->setCategory($container->category->find(673));
 //$article->addTag($container->tag->find(222));
 //$article->addTag($tag2);
 
-//debug($article);
+debug($article);
 //foreach ($article->getTags() as $tag) {
 	//debug($tag);
 //}
 
-//$container->article->save($article);
+$container->article->save($article);
 
 
 exit;

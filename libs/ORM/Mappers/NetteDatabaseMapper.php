@@ -179,6 +179,27 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 			}
 		}
 
+		foreach ($this->entityReflection->getRelationships('ORM\Reflection\OneToMany') as $column) {
+			$mapper = $this->getManager()->getRepository($column->getTargetClassName())->getMapper();
+			$value = $this->getValue($entity, $reflection, $column->getName());
+
+			// prejdem vsetky target entity a ulozim
+			foreach ($value as $item) {
+			//debug($item);
+				//$mapper->save($item, false);
+
+/*
+				// spojenie z kazdou entitou (ak este nie je)
+				if (get_class($value) == 'ORM\Collections\ArrayCollection' || !$mapper->getMany($value)->offsetExists($item->getId())) {
+					$this->connection->table($pairtable)->insert(array(
+						$this->entityReflection->getReferenceKeyName() => $entity->getId(),
+						$column->getTargetEntity()->getReferenceKeyName() => $item->getId()
+					));
+				}*/
+			}
+		}
+		
+
 		return $entity;
 	}
 
