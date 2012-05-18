@@ -4,7 +4,8 @@ namespace ORM\Reflection;
 
 use Nette;
 
-class ManyToOne extends ManyToMany {
+class ManyToOne extends Association {
 
 	const NAME = 'manyToOne';
+	const TYPE = 'toOne';
 }

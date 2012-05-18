@@ -4,15 +4,11 @@ use:
 	- Nette
 	- ORM
 
-
-
 class: 
 	name: Article
 	extends: Entity
-	implements: ORM\IEntity
 	annotations:
 		entity: [table: article]
-
 		repository:
 			calss: Repositories\ArticleRepository
 			mapper: ORM\Mappers\NetteDatabaseMapper

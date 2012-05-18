@@ -31,6 +31,7 @@ class EntityGenerator {
 		foreach ($entities as $entityName => $entityCode) {
 			$entityReflection = new Reflection\Entity($entityName);
 			$entities[$entityName] = $this->addMethodsToEntity($entityCode, $entityReflection, $configs[$entityName]);
+			// break;
 		}
 	}
 
@@ -112,24 +113,40 @@ class EntityGenerator {
 		return "@$name(" . implode(', ', $annotations) . ")";
 	}
 
+	/**
+	 * [addMethodsToEntity description]
+	 * @param [type] $code       [description]
+	 * @param [type] $reflection [description]
+	 * @param [type] $config     [description]
+	 */
 	protected function addMethodsToEntity($code, $reflection, $config) {
+
+		$construct = $code->addMethod('__construct');
 
 		foreach ($reflection->getColumns() as $propertyName => $column) {
 			if(isset($config->class->properties->{$propertyName})) {
-				debug($column);
-				# @todo dorobit docBlok pre setter a getter
 				$setter = $code->addMethod('set' . ucfirst($propertyName));
+				$documents = array();
+				$documents[] = "@param {$column->getType()} $propertyName";
+				$setter->setDocuments($documents);
 				$setter->addParameter($propertyName);
 				$setter->addBody("\$this->$propertyName = \$$propertyName;");
 
 				$getter = $code->addMethod('get' . ucfirst($propertyName));
+				$documents = array();
+				$documents[] = "@return {$column->getType()}";
+				$getter->setDocuments($documents);
 				$getter->addBody("return \$this->$propertyName;");
 			}
 		}
 		
 		foreach ($reflection->getRelationships() as $propertyName => $relationships) {
-			debug($relationships->getTargetEntity());
+			// debug($relationships);
+			if($relationships::TYPE == 'toMany') {
+				$construct->addBody("\$this->$propertyName = new ORM\Collections\ArrayCollection;");
+			}
 			# @todo dorobit metody pre vstahove property
+
 		}
 		echo "<pre>$code</pre>";
 	}

@@ -1,0 +1,25 @@
+namespace: Entities
+
+use:
+	- Nette
+	- ORM
+
+class: 
+	name: Category
+	extends: Entity
+	annotations:
+		entity: [table: category]
+		repository:
+			calss: ORM\Repository
+			mapper: ORM\Mappers\NetteDatabaseMapper
+
+
+	properties:
+		name:
+			column: [type: varchar, nullable: false]
+		category: 
+			manyToOne: [target: Category, mappedBy: children]
+		children: 
+			oneToMany: [target: Category, inversedBy: category]
+		articles: 
+			oneToMany: [target: Article, inversedBy: category]

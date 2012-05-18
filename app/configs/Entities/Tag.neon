@@ -1,0 +1,21 @@
+namespace: Entities
+
+use:
+	- Nette
+	- ORM
+
+class: 
+	name: Tag
+	extends: Entity
+	annotations:
+		entity: [table: tag]
+		repository:
+			calss: ORM\Repository
+			mapper: ORM\Mappers\NetteDatabaseMapper
+
+
+	properties:
+		name:
+			column: [type: varchar, nullable: false]
+		articles: 
+			manyToMany: [target: Article, inversedBy: category]
