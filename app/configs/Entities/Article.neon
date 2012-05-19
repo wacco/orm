@@ -16,17 +16,16 @@ class:
 
 	properties:
 		title:  
-			propertyValue: FALSE
+			defaultValue: FALSE
 			- toto je koment
 			var: string
 			- dalsi koment
 			column: [type: varchar, nullable: false]
 			testAnn: [name: Test, value: 34]
 		category: 
-			propertyValue: NULL
 			manyToOne: [target: Category, mappedBy: articles]
-		tags: 
-			propertyName: haha
+		tags:
+			defaultValue: NULL
 			manyToMany: [target: Tag, mappedBy: articles]
 		published: 
 			column: [type: datetime, nullable: true]

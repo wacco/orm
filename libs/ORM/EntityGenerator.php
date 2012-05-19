@@ -5,6 +5,7 @@ namespace ORM;
 use Nette;
 use Nette\ArrayHash;
 use Nette\Utils\Finder;
+use Nette\Utils\Strings;
 
 /**
  * Generator proxy entit
@@ -16,9 +17,10 @@ class EntityGenerator {
 		$this->loader = new Nette\Loaders\RobotLoader;
 		$this->loader->setCacheStorage($storage);
 		if (!is_dir($destinationDir)) {
+			@mkdir($destinationDir, 0777);
 		}
+		$this->loader->addDirectory($destinationDir)->register();
 			$this->generate($configDir, $destinationDir);
-		// $this->loader->addDirectory($destinationDir)->register();
 	}
 
 	protected function generate($configDir, $destinationDir) {
@@ -80,12 +82,11 @@ class EntityGenerator {
 	}
 
 	protected function addPropertyToEntity($entity, $name, $config) {
-		$name = isset($config->propertyName) ? $config->propertyName : $name;
 		$property = $entity->addProperty($name);
 		$property->visibility = 'protected';
 		$property->name = $name;
-		if(isset($config->propertyValue)) $property->value = $config->propertyValue;
-		unset($config->propertyName, $config->propertyValue);
+		if(isset($config->defaultValue)) $property->value = $config->defaultValue;
+		unset($config->propertyName, $config->defaultValue);
 		if(count($config)) {
 			$documents = array();
 			foreach ($config as $key => $value) {
@@ -127,7 +128,7 @@ class EntityGenerator {
 			if(isset($config->class->properties->{$propertyName})) {
 				$setter = $code->addMethod('set' . ucfirst($propertyName));
 				$documents = array();
-				$documents[] = "@param {$column->getType()} $propertyName";
+				$documents[] = "@param {$column->getType()} \$$propertyName";
 				$setter->setDocuments($documents);
 				$setter->addParameter($propertyName);
 				$setter->addBody("\$this->$propertyName = \$$propertyName;");
@@ -141,18 +142,75 @@ class EntityGenerator {
 		}
 		
 		foreach ($reflection->getRelationships() as $propertyName => $relationships) {
-			// debug($relationships);
-			if($relationships::TYPE == 'toMany') {
-				$construct->addBody("\$this->$propertyName = new ORM\Collections\ArrayCollection;");
-			}
-			# @todo dorobit metody pre vstahove property
+			// debug($config->class->properties);
+			if(isset($config->class->properties->{$propertyName})) {
+				if($relationships::TYPE == 'toMany') {
+					$construct->addBody("\$this->$propertyName = new ORM\Collections\ArrayCollection;");
+					
+					$propertyNameSingular = $this->nameToSingular($propertyName);
+					$setter = $code->addMethod('set' . ucfirst($propertyNameSingular));
+					$documents = array();
+					$documents[] = "@param {$relationships->getTargetClassName()} \$$propertyNameSingular";
+					$setter->setDocuments($documents);
+					$setter->addParameter($propertyNameSingular);
+					$setter->addBody("\$this->{$propertyName}->add(\$$propertyNameSingular);");
 
+					$propertyNameSingular = $this->nameToSingular($propertyName);
+					$remover = $code->addMethod('remove' . ucfirst($propertyNameSingular));
+					$documents = array();
+					$documents[] = "@param {$relationships->getTargetClassName()} \$$propertyNameSingular";
+					$remover->setDocuments($documents);
+					$remover->addParameter($propertyNameSingular);
+					$remover->addBody("\$this->{$propertyName}->remove(\$$propertyNameSingular);");
+
+
+					$getter = $code->addMethod('get' . ucfirst($propertyName));
+					$documents = array();
+					$documents[] = "@return {$relationships->getTargetClassName()}";
+					$getter->setDocuments($documents);
+					$getter->addBody("return \$this->$propertyName;");
+				} else {
+					$setter = $code->addMethod('set' . ucfirst($propertyName));
+					$documents = array();
+					$documents[] = "@param {$relationships->getTargetClassName()} \$$propertyName";
+					$setter->setDocuments($documents);
+					$setter->addParameter($propertyName);
+					$setter->addBody("\$this->{$propertyName} = \$$propertyName;");
+
+					$getter = $code->addMethod('get' . ucfirst($propertyName));
+					$documents = array();
+					$documents[] = "@return {$relationships->getTargetClassName()}";
+					$getter->setDocuments($documents);
+					$getter->addBody("return \$this->$propertyName;");
+				}
+			}
 		}
 		echo "<pre>$code</pre>";
 	}
 
+	public function nameToPlural($name) {
+		if(Strings::endsWith($name, 'y')) {
+			return substr($name, 0, -1) . 'ies';
+		} else {
+			return $name . 's';
+		}
+	}
+
+	public function nameToSingular($name) {
+		$options = array(
+			'tags' => 'tag',
+		);
+		$name = strtolower($name);
+		if(isset($options[$name])) $name = $options[$name];
+		else if(Strings::endsWith($name, 'ies')) {
+			$name = substr($name, 0 , -3).'y';
+		} else if (Strings::endsWith($name, 's')) {
+			$name = substr($name, 0 , -1);
+		}
+		return $name;
+	}
+
 	protected function createFiles($entities, $destinationDir) {
-		@mkdir($destinationDir, 0777);
 		foreach ($entities as $name => $entity) {
 			file_put_contents($destinationDir . '/' . str_replace('\\', '', $name) . '.php', "<?php\n\n" . $entity);
 		}
