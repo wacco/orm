@@ -33,22 +33,26 @@ $tag1->setName('Nazov tagu ' . Strings::random(4));
 $tag2 = new Entities\Tag;
 $tag2->setName('Nazov tagu ' . Strings::random(4));
 
+$cat = $container->category->find(20);
+//$cat = new Entities\Category;
+//$cat->setName('Nazov kategórie ' . Strings::random(4));
 
-$article = $container->article->find(649);
+$article = $container->article->find(27);
 //$article = new Entities\Article;
-$article->setTitle('Moja titulka ' . Strings::random(4));
+//$article->setTitle('Moja titulka ' . Strings::random(4));
 $article->setContent('Obrash stránky');
-$article->setCreated(new Nette\DateTime);
-$article->setCategory($container->category->find(673));
+//$article->setCreated(new Nette\DateTime);
+$article->setCategory($cat);
 //$article->addTag($tag1);
-//$article->addTag($container->tag->find(222));
+$article->addTag($container->tag->find(1));
 //$article->addTag($tag2);
 
-debug($article);
-//foreach ($article->getTags() as $tag) {
-	//debug($tag);
-//}
 
+foreach ($article->getTags() as $tag) {
+	debug($tag);
+}
+
+debug($article);
 $container->article->save($article);
 
 

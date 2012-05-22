@@ -7,6 +7,11 @@ use Nette;
 class Column {
 
 	const NAME = 'column';
+	const TYPE = 'type';
+	const DEFAULTS = 'default';
+	const LENGTH = 'length';
+	const NULL = 'null';
+	const UNSIGNED = 'unsigned';
 
 	protected $property;
 
@@ -23,30 +28,30 @@ class Column {
 	}
 
 	public function getType() {
-		return $this->property->getAnnotation(static::NAME)->type;
+		return $this->property->getAnnotation(static::NAME)->{static::TYPE};
 	}
 
 	public function getDefaultValue() {
-		return isset($this->property->getAnnotation(static::NAME)->default)
-			? $this->property->getAnnotation(static::NAME)->default
+		return isset($this->property->getAnnotation(static::NAME)->{static::DEFAULTS})
+			? $this->property->getAnnotation(static::NAME)->{static::DEFAULTS}
 			: null;
 	}
 
 	public function getLength() {
-		return isset($this->property->getAnnotation(static::NAME)->length)
-			? (int)$this->property->getAnnotation(static::NAME)->length
+		return isset($this->property->getAnnotation(static::NAME)->{static::LENGTH})
+			? (int)$this->property->getAnnotation(static::NAME)->{static::LENGTH}
 			: null;
 	}
 
 	public function isNullable() {
-		return isset($this->property->getAnnotation(static::NAME)->null)
-			? (bool)$this->property->getAnnotation(static::NAME)->null
+		return isset($this->property->getAnnotation(static::NAME)->{static::NULL})
+			? (bool)$this->property->getAnnotation(static::NAME)->{static::NULL}
 			: true;
 	}
 
 	public function isUnsigned() {
-		return isset($this->property->getAnnotation(static::NAME)->unsigned)
-			? (bool)$this->property->getAnnotation(static::NAME)->unsigned
+		return isset($this->property->getAnnotation(static::NAME)->{static::UNSIGNED})
+			? (bool)$this->property->getAnnotation(static::NAME)->{static::UNSIGNED}
 			: false;
 	}
 

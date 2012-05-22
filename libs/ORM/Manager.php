@@ -21,12 +21,19 @@ class Manager implements IManager {
 	private $container = null;
 
 	/**
+	 * @var Nette\Caching\IStorage
+	 */
+	protected $cacheStorage = null;
+
+	/**
 	 * @param Nette\Database\Connection
 	 */
-	public function __construct(Nette\Database\Connection $connection) {
+	public function __construct(Nette\Database\Connection $connection, Nette\Caching\IStorage $cacheStorage = null) {
 		//TODO: treba vyriesit zavyslost na databaze, pripadne na cache atd...
+		//tak isto zavyslost na cacheStorage
 		$this->connection = $connection;
 		$this->container = new Nette\DI\Container;
+		$this->cacheStorage = $cacheStorage;
 	}
 
 	/**
@@ -41,7 +48,10 @@ class Manager implements IManager {
 	
 		if (!$this->container->hasService($table->getTableName())) {
 			$mapper = new $mapper($this->connection, $this, $entityName);
-			$repository = new $repository($mapper);
+			$repository = new $repository($mapper, $entityName);
+			if ($this->cacheStorage instanceof Nette\Caching\IStorage) {
+				$repository->setCacheStorage($this->cacheStorage);
+			}
 			$this->container->addService($table->getTableName(), $repository);
 		}
 

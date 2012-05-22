@@ -7,13 +7,16 @@ use Nette;
 class ManyToMany extends Column {
 
 	const NAME = 'manyToMany';
+	const TARGET_ENTITY = 'targetEntity';
+	const INVERSED_BY = 'inversedBy';
+	const MAPPED_BY = 'mappedBy';
 
 	public function getEntity() {
 		return Entity::from($this->property->getDeclaringClass()->getName());
 	}
 
 	public function getTarget() {
-		return $this->property->getAnnotation(static::NAME)->target;
+		return $this->property->getAnnotation(static::NAME)->{static::TARGET_ENTITY};
 	}
 
 	public function getTargetClassName() {
@@ -42,5 +45,21 @@ class ManyToMany extends Column {
 		$tables = array($table1, $table2);
 		sort($tables);
 		return implode('_', $tables);
+	}
+
+	public function getInversedBy() {
+		return $this->property->getAnnotation(static::NAME)->{static::INVERSED_BY};
+	}
+
+	public function getMappedBy() {
+		return $this->property->getAnnotation(static::NAME)->{static::MAPPED_BY};
+	}
+
+	public function isInversedBy() {
+		return isset($this->property->getAnnotation(static::NAME)->{static::INVERSED_BY});
+	}
+
+	public function isMappedBy() {
+		return isset($this->property->getAnnotation(static::NAME)->{static::MAPPED_BY});
 	}
 }

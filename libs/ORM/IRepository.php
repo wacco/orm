@@ -8,7 +8,7 @@ namespace ORM;
  */
 interface IRepository {
 
-	public function __construct(Mappers\IMapper $mapper);
+	public function __construct(Mappers\IMapper $mapper, $entityName);
 
 	public function save(IEntity $entity);
 

@@ -29,12 +29,12 @@ class Article extends Entity {
 	protected $status = self::STATUS_DRAFT;
 
 	/**
-	 * @manyToMany(target=Tag)
+	 * @manyToMany(targetEntity=Tag, inversedBy="articles")
 	 */
 	protected $tags;
 
 	/**
-	 * @manyToOne(target=Category)
+	 * @manyToOne(targetEntity=Category, inversedBy="articles")
 	 */
 	protected $category;
 

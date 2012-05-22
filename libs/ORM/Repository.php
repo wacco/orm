@@ -13,14 +13,20 @@ class Repository implements IRepository {
 	/**
 	 * @var Mappers\IMapper
 	 */
-	private $mapper = null;
+	protected $mapper = null;
+
+	/**
+	 * @var string
+	 */
+	protected $entityName = null;
 
 	/**
 	 * @param Mappers\IMapper
 	 * @param IManager
 	 */
-	public function __construct(Mappers\IMapper $mapper) {
+	public function __construct(Mappers\IMapper $mapper, $entityName) {
 		$this->mapper = $mapper;
+		$this->entityName = $entityName;
 	}
 
 	/**
@@ -55,6 +61,23 @@ class Repository implements IRepository {
 	 */
 	public function getManager() {
 		return $this->manager;
+	}
+
+	/**
+	 * Vrati nazov entity
+	 * @return string
+	 */
+	public function getEntityName() {
+		return $this->entityName;
+	}
+
+	/**
+	 * Nastavenie cache storage
+	 * @param Nette\Caching\IStorage
+	 * @return IRepository
+	 */
+	public function setCacheStorage(Nette\Caching\IStorage $cacheStorage) {
+		return $this;
 	}
 
 	/**

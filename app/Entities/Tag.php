@@ -16,7 +16,7 @@ class Tag extends Entity {
 	protected $name;
 
 	/**
-	 * @manyToMany(target=Article)
+	 * @manyToMany(targetEntity=Article, mappedBy="tags")
 	 */
 	protected $articles;
 

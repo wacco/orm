@@ -16,17 +16,17 @@ class Category extends Entity {
 	protected $name;
 
 	/**
-	 * @manyToOne(target=Category)
+	 * @manyToOne(targetEntity=Category, inversedBy="children")
 	 */
 	protected $category;
 
 	/**
-	 * @oneToMany(target=Category)
+	 * @oneToMany(targetEntity=Category, mappedBy="category")
 	 */
 	protected $children;
 
 	/**
-	 * @oneToMany(target=Article)
+	 * @oneToMany(targetEntity=Article, mappedBy="tags")
 	 */
 	protected $articles;
 

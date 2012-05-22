@@ -8,6 +8,9 @@ class Entity {
 
 	const NAME = 'entity';
 	const REPOSITORY = 'repository';
+	const TABLE = 'table';
+	const MAPPER = 'mapper';
+	const REPOCLASS = 'class';
 
 	protected $class;
 
@@ -24,15 +27,15 @@ class Entity {
 	}
 
 	public function getTableName() {
-		return $this->class->getAnnotation(static::NAME)->table;
+		return $this->class->getAnnotation(static::NAME)->{static::TABLE};
 	}
 
 	public function getRepository() {
-		return $this->class->getAnnotation(static::REPOSITORY)->class;
+		return $this->class->getAnnotation(static::REPOSITORY)->{static::REPOCLASS};
 	}
 
 	public function getMapper() {
-		return $this->hasRepository() ? $this->class->getAnnotation(static::REPOSITORY)->mapper : false;
+		return $this->hasRepository() ? $this->class->getAnnotation(static::REPOSITORY)->{static::MAPPER} : false;
 	}
 
 	public function hasRepository() {

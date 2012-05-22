@@ -89,7 +89,7 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 		return $this->manager;
 	}
 
-	public function save(ORM\IEntity $entity, $cascade = true) {
+	public function save(ORM\IEntity $entity) {
 		if ($entity instanceof ORM\IProxy) {
 			if ($entity->__isLoad() === false) {
 				return $entity;
@@ -142,7 +142,7 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 				$this->onBeforeUpdate($entity);
 				$data = $this->updateData($data, $entity->toArray());
 				if (!$row = $this->findInStack($entity->getId())) {
-					$this->connection->table($this->entityReflection->getTableName())->get($entity->getId());
+					$row = $this->connection->table($this->entityReflection->getTableName())->get($entity->getId());
 				}
 				$item = $row->update($data);
 				$this->onAfterUpdate($entity);
@@ -158,12 +158,15 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 			$this->addToStack($item);
 		}
 
-		if ($cascade) {
-			foreach ($this->entityReflection->getRelationships('ORM\Reflection\ManyToMany') as $column) {
-				$mapper = $this->getManager()->getRepository($column->getTargetClassName())->getMapper();
-				$value = $this->getValue($entity, $reflection, $column->getName());
-				$pairtable = $this->getPairTable($column->getTargetEntity()->getTableName(), $this->entityReflection->getTableName());
+		$toMany = $this->entityReflection->getRelationships('ORM\Reflection\ManyToMany')
+			+ $this->entityReflection->getRelationships('ORM\Reflection\OneToMany');
 
+		foreach ($toMany as $column) {
+			$mapper = $this->getManager()->getRepository($column->getTargetClassName())->getMapper();
+			$value = $this->getValue($entity, $reflection, $column->getName());
+			$pairtable = $this->getPairTable($column->getTargetEntity()->getTableName(), $this->entityReflection->getTableName());
+
+			if ($column->isInversedBy()) {
 				// prejdem vsetky target entity a ulozim
 				foreach ($value as $item) {
 					$mapper->save($item, false);
@@ -178,27 +181,6 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 				}
 			}
 		}
-
-		foreach ($this->entityReflection->getRelationships('ORM\Reflection\OneToMany') as $column) {
-			$mapper = $this->getManager()->getRepository($column->getTargetClassName())->getMapper();
-			$value = $this->getValue($entity, $reflection, $column->getName());
-
-			// prejdem vsetky target entity a ulozim
-			foreach ($value as $item) {
-			//debug($item);
-				//$mapper->save($item, false);
-
-/*
-				// spojenie z kazdou entitou (ak este nie je)
-				if (get_class($value) == 'ORM\Collections\ArrayCollection' || !$mapper->getMany($value)->offsetExists($item->getId())) {
-					$this->connection->table($pairtable)->insert(array(
-						$this->entityReflection->getReferenceKeyName() => $entity->getId(),
-						$column->getTargetEntity()->getReferenceKeyName() => $item->getId()
-					));
-				}*/
-			}
-		}
-		
 
 		return $entity;
 	}
