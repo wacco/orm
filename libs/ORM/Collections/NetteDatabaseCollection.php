@@ -36,4 +36,8 @@ class NetteDatabaseCollection extends ArrayCollection implements \Iterator {
 		$this->selection->page($page, $itemsPerPage);
 		return $this;
 	}
+
+	public function count() {
+		return $this->selection->count();
+	}
 }

@@ -37,12 +37,12 @@ class Repository implements IRepository {
 	 */
 	public function __call($name, $args) {
 		if (strpos($name, 'findBy') === 0) {
-			$param = strtolower(substr($name, 6));
-			return $this->findBy(array($param => $args));
+			$param = trim(strtolower(preg_replace('/([A-Z])/', '_${1}', substr($name, 6))), '_');
+			return $this->findBy(array($param => count($args) == 1 ? current($args) : $args));
 		}
 		if (strpos($name, 'findOneBy') === 0) {
 			$param = strtolower(substr($name, 9));
-			return $this->findOneBy(array($param => $args));
+			return $this->findOneBy(array($param => count($args) == 1 ? current($args) : $args));
 		}
 		throw new Nette\MemberAccessException("Call to undefined method " . get_class() . "::$name().");
 	}

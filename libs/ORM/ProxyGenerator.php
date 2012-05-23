@@ -82,6 +82,9 @@ class ProxyGenerator {
 		$mapper = $proxy->addProperty('_mapper');
 		$mapper->setVisibility('private');
 
+		$mapper = $proxy->addProperty('_primary');
+		$mapper->setVisibility('private');
+
 		$mapper = $proxy->addProperty('_isLoaded')->setValue(false);
 		$mapper->setVisibility('private');
 
@@ -108,7 +111,7 @@ class ProxyGenerator {
 		$proxyMethod->addBody('return parent::getObjectHash();');
 
 		foreach ($class->getMethods() as $method) {
-			if ($method->isConstructor() || $method->getName() == 'getId' || $method->getName() == 'getObjectHash') {
+			if ($method->isConstructor() || strpos($method->getName(), '__') !== false || $method->getName() == 'getId' || $method->getName() == 'getObjectHash') {
 				continue;
 			}
 			$args = array();

@@ -167,16 +167,18 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 			$pairtable = $this->getPairTable($column->getTargetEntity()->getTableName(), $this->entityReflection->getTableName());
 
 			if ($column->isInversedBy()) {
-				// prejdem vsetky target entity a ulozim
+				// prejdem vsetky target entdity a ulozim
 				foreach ($value as $item) {
-					$mapper->save($item, false);
+					$mapper->save($item);
 
-					// spojenie z kazdou entitou (ak este nie je)
-					if (get_class($value) == 'ORM\Collections\ArrayCollection' || !$mapper->getMany($value)->offsetExists($item->getId())) {
+					debug($value);
+
+					if (get_class($column) == 'ORM\Reflection\ManyToMany' && $value instanceof ORM\Collections\ArrayCollection && !$value->isPersistent($item)) {
 						$this->connection->table($pairtable)->insert(array(
 							$this->entityReflection->getReferenceKeyName() => $entity->getId(),
 							$column->getTargetEntity()->getReferenceKeyName() => $item->getId()
 						));
+						$value->addPersistent($item);
 					}
 				}
 			}
@@ -249,18 +251,16 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 			$this->setValue($entity, $reflection, $property, $value);
 		}
 
-		foreach ($this->entityReflection->getRelationships('ORM\Reflection\ManyToOne') as $column) {
+		$toMany = $this->entityReflection->getRelationships('ORM\Reflection\ManyToMany')
+			+ $this->entityReflection->getRelationships('ORM\Reflection\OneToMany');
+
+		foreach ($toMany as $column) {
 			$this->setValue(
 				$entity, $reflection, $column->getName(),
-				new ORM\Collections\PersistentCollection($this->manager, $entity, $column->getTargetClassName())
+				new ORM\Collections\PersistentCollection($this->manager, $entity, $column)
 			);
 		}
-		foreach ($this->entityReflection->getRelationships('ORM\Reflection\ManyToMany') as $column) {
-			$this->setValue(
-				$entity, $reflection, $column->getName(),
-				new ORM\Collections\PersistentCollection($this->manager, $entity, $column->getTargetClassName())
-			);
-		}
+
 		foreach ($this->entityReflection->getRelationships('ORM\Reflection\ManyToOne') as $column) {
 			$targetId = $column->getTargetEntity()->getReferenceKeyName();
 			if (isset($data[$targetId])) {
@@ -308,8 +308,6 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 		$idProp->setValue($entity, $value);
 	}
 
-
-
 	private function getPairTable($table1, $table2) {
 		$tables = array($table1, $table2);
 		sort($tables);
@@ -318,11 +316,18 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 
 	public function getMany(ORM\Collections\PersistentCollection $collection) {
 		$source = ORM\Reflection\Entity::from($collection->getParent());
-		if (!isset($this->manyList[$source->getTableName()])) {
-			
-			$selection = $this->connection->table($this->entityReflection->getTableName())
-				->where($this->getPairTable($source->getTableName(), $this->entityReflection->getTableName()) . ':' . $source->getReferenceKeyName())
-				->where($source->getReferenceKeyName(), $collection->getParent()->getId());
+		$key = $source->getTableName() . $collection->getParent()->getId();		
+		$pairtable = $this->getPairTable($source->getTableName(), $this->entityReflection->getTableName());
+	
+		if (!isset($this->manyList[$key])) {
+			if ($collection->getTarget() instanceof ORM\Reflection\OneToMany) {
+				$selection = $this->connection->table($this->entityReflection->getTableName())
+					->where($source->getReferenceKeyName(), $collection->getParent()->getId());
+			} else {
+				$selection = $this->connection->table($this->entityReflection->getTableName())
+					->where($pairtable . ':' . $source->getReferenceKeyName())
+					->where($source->getReferenceKeyName(), $collection->getParent()->getId());
+			}
 
 			//TODO: vyriesit neduplikovanie entit
 			$list = new \ArrayIterator;
@@ -330,8 +335,8 @@ class NetteDatabaseMapper extends Nette\Object implements IMapper {
 				$entity = $this->load($row);
 				$list->offsetSet($entity->getId(), $entity);
 			}
-			$this->manyList[$source->getTableName()] = $list;
+			$this->manyList[$key] = $list;
 		}
-		return $this->manyList[$source->getTableName()];
+		return $this->manyList[$key];
 	}
 }

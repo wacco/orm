@@ -7,9 +7,11 @@ use ORM, ORM\Mappers\IMapper;
 class ArrayCollection implements \Iterator, \Countable {
 
 	protected $list;
+	protected $persitent;
 
 	public function __construct() {
 		$this->list = new \ArrayIterator;
+		$this->peristent = new \ArrayIterator;
 	}
 
 	public function getIterator() {
@@ -32,6 +34,19 @@ class ArrayCollection implements \Iterator, \Countable {
 		if ($this->list->offsetExists($entity->getObjectHash())) {
 			$this->list->offsetUnset($entity->getObjectHash());
 		}
+	}
+
+	public function isPersistent(ORM\IEntity $entity) {
+		return $this->peristent->offsetExists($entity->getId());
+	}
+
+	public function addPersistent(ORM\IEntity $entity) {
+		return $this->peristent->offsetSet($entity->getId(), $entity);
+	}
+
+	public function first() {
+		$this->rewind();
+		return $this->current();
 	}
 
 	public function count() {
