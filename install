@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [ ! -d ./temp ]; then
+	mkdir -m 777 ./temp
+else
+	chmod 777 ./temp
+	rm -rf ./temp/*
+fi
+
+if [ ! -d ./temp/sessions ]; then
+	mkdir -m 777 ./temp/sessions
+else
+	chmod 777 ./temp/sessions
+fi
+
+if [ ! -d ./temp/proxies ]; then
+	mkdir -m 777 ./temp/proxies
+else
+	chmod 777 ./temp/proxies
+fi
+
+if [ ! -d ./log ]; then
+	mkdir -m 777 ./log
+else
+	chmod 777 ./log
+fi
+
+# sh run-tests.sh -p /Applications/MAMP/bin/php/php5.3.6/bin/php

@@ -33,11 +33,11 @@ $tag1->setName('Nazov tagu ' . Strings::random(4));
 $tag2 = new Entities\Tag;
 $tag2->setName('Nazov tagu ' . Strings::random(4));
 
-$cat = $container->category->find(20);
+$cat = $container->category->find(506);
 //$cat = new Entities\Category;
 //$cat->setName('Nazov kategórie ' . Strings::random(4));
 
-$article = $container->article->find(27);
+$article = $container->article->find(119);
 //$article = new Entities\Article;
 $article->setTitle('Moja titulka ' . Strings::random(4));
 $article->setContent('Obrash stránky');
